@@ -8,3 +8,6 @@ seaborn
 opencv-python
 torchsummary
 rasterio
+fastapi
+uvicorn
+python-multipart

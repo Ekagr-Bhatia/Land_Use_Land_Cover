@@ -63,7 +63,9 @@ class LULCDataset(Dataset):
                 image = src.read()
                 image = np.transpose(image, (1, 2, 0)) # -> (H, W, Channels)
             
-            # .tif images from EuroSAT are already 64x64, no need to resize.
+            # EuroSAT Sentinel-2 .tif images are uint16 (reflectance * 10000).
+            # We must cast to float32 so ToTensor() doesn't return a uint16 tensor that crashes Normalize().
+            image = image.astype(np.float32) / 10000.0
             
         if self.transform_status:
             image = self.transform(image)

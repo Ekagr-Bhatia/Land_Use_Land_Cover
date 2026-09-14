@@ -1,18 +1,69 @@
-# Environments
+# Environments & Virtual Envs
 venv/
+.venv/
 env/
 .env
+ENV/
+env.bak/
+venv.bak/
 
-# Data
+# Datasets (large geospatial TIFFs and CSVs)
 data/
 
-# Models
+# Model Checkpoints (large binary weights >50MB)
 saved_models/
+*.pth
+*.pt
+*.onnx
 
-# Python caching
+# Python Caching & Bytecode
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Jupyter Notebooks
+# Jupyter & IPython
 .ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# Logs & Runtime Artifacts
+*.log
+.runtime/
+.runtime*
+
+# Output & Generated Evaluation Images
+confusion_matrix.png
+
+# IDE & Editor Configurations
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini

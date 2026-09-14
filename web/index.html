@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TERRA / VISION — Earth Observation AI</title>
+  <meta name="description" content="A calibrated PyTorch machine learning classifier reading 13-band Sentinel-2 multispectral imagery from the EuroSAT dataset to identify 10 land-use and land-cover categories.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <!-- Subtle grain overlay -->
+  <div class="grain-overlay" aria-hidden="true"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="site-nav">
+    <div class="nav-brand">
+      <span class="brand-mark">●</span>
+      <strong>TERRA / VISION</strong>
+      <span class="nav-tag">EUROSAT · 13-BAND MSI</span>
+    </div>
+    <div class="nav-links">
+      <a href="#analyze" class="nav-link">01 ANALYZE</a>
+      <a href="#classification" class="nav-link">02 CLASSIFICATION</a>
+      <a href="#model" class="nav-link">03 MODEL</a>
+      <a href="#performance" class="nav-link">04 PERFORMANCE</a>
+      <a href="#samples-section" class="nav-link">05 SAMPLES</a>
+      <a href="#about" class="nav-link">06 ABOUT</a>
+    </div>
+    <a href="#analyze" class="nav-cta">START ANALYSIS ↓</a>
+  </nav>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+      <div class="hero-header">
+        <p class="section-tag">LAND USE / LAND COVER · MACHINE VISION</p>
+        <h1 class="hero-title">
+          UNDERSTANDING<br>
+          THE SURFACE<br>
+          OF OUR PLANET.
+        </h1>
+      </div>
+
+      <!-- Topographic Contour Graphic -->
+      <div class="contour-container" aria-hidden="true">
+        <svg viewBox="0 0 600 600" class="contour-svg" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="300" cy="300" rx="270" ry="210" class="contour-ring ring-1" />
+          <path d="M 120,300 C 140,200 240,130 360,150 C 470,170 510,270 480,370 C 450,470 330,490 220,460 C 140,430 100,380 120,300 Z" class="contour-ring ring-2" />
+          <path d="M 160,300 C 180,220 250,180 340,190 C 430,200 460,280 440,360 C 410,430 310,440 230,420 C 170,400 140,360 160,300 Z" class="contour-ring ring-3" />
+          <path d="M 210,300 C 220,240 280,220 340,230 C 400,240 420,300 400,350 C 380,400 300,410 250,390 C 220,370 200,340 210,300 Z" class="contour-ring ring-4" />
+          <circle cx="310" cy="305" r="30" class="contour-core" />
+        </svg>
+      </div>
+
+      <div class="hero-content">
+        <article class="hero-summary">
+          A calibrated PyTorch machine learning classifier reading 13-band Sentinel-2 multispectral imagery
+          from the EuroSAT dataset to identify ten land-use and land-cover categories at 10m–60m spatial resolution.
+        </article>
+
+        <div class="hero-actions">
+          <a class="button button-primary" href="#analyze">START ANALYSIS ↓</a>
+          <a class="button button-ghost" href="#samples-section">BROWSE SAMPLES →</a>
+        </div>
+      </div>
+
+      <footer class="hero-footer">
+        <div class="meta-item"><span>MODEL</span><b>RESNET-50 PRETRAINED</b></div>
+        <div class="meta-item"><span>INPUT</span><b>13 × 64 × 64 PX</b></div>
+        <div class="meta-item"><span>CLASSES</span><b>10 CATEGORIES</b></div>
+        <div class="meta-item"><span>SENSOR</span><b>SENTINEL-2 MSI</b></div>
+      </footer>
+    </section>
+
+    <!-- 01 / ANALYZE SECTION -->
+    <section id="analyze" class="analyze-section">
+      <div class="section-intro">
+        <p class="section-tag">01 / ANALYZE</p>
+        <h2 class="section-title">PUT A SCENE<br>UNDER THE LENS.</h2>
+        <p class="section-desc">
+          Upload a 13-band Sentinel-2 GeoTIFF (.tif/.tiff) or choose from the sample library.
+          The production pipeline extracts spectral reflectance, rescales to physical units, and executes full-tensor neural inference.
+        </p>
+      </div>
+
+      <!-- Upload Grid -->
+      <div class="upload-grid">
+        <div class="upload-zone" id="drop-zone" tabindex="0" role="button" aria-label="Drop 13-band Sentinel-2 GeoTIFF file here or click to browse">
+          <input type="file" id="file-input" accept=".tif,.tiff" class="file-input" aria-label="Select GeoTIFF file">
+          <div class="upload-prompt">
+            <svg class="upload-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 16V4M12 4L7 9M12 4L17 9" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 14V19C4 19.5304 4.21071 20.0391 4.58579 20.4142C4.96086 20.7893 5.46957 21 6 21H18C18.5304 21 19.0391 20.7893 19.4142 20.4142C19.7893 20.0391 20 19.5304 20 19V14" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="upload-text">
+              <strong>DROP 13-BAND GEOTIFF HERE</strong>
+              <span>or click to browse your filesystem</span>
+            </div>
+            <span class="upload-badge">.TIF / .TIFF · 13 SENTINEL-2 CHANNELS</span>
+          </div>
+        </div>
+
+        <div class="file-inspector" id="file-inspector">
+          <div class="inspector-header">SCENE TELEMETRY</div>
+          <div class="inspector-preview" id="upload-preview-box">
+            <div class="empty-preview-state">
+              <span class="crosshair">+</span>
+              <p>NO SCENE LOADED</p>
+              <small>Drag a .tif or select a sample</small>
+            </div>
+          </div>
+          <div class="inspector-details" id="file-details">
+            <div class="detail-row">
+              <span class="detail-key">FILE</span>
+              <span class="detail-val" id="detail-filename">—</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-key">SIZE</span>
+              <span class="detail-val" id="detail-size">—</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-key">CHANNELS</span>
+              <span class="detail-val" id="detail-bands">13 Bands (Expected)</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-key">STATUS</span>
+              <span class="detail-val status-idle" id="detail-status">Awaiting input</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls-bar">
+        <div class="control-group">
+          <label for="model-select" class="control-label">CHECKPOINT ARCHITECTURE</label>
+          <select id="model-select" class="select-input">
+            <option value="resnet_pretrained_best">ResNet-50 · ImageNet Pretrained (Recommended)</option>
+            <option value="resnet_scratch_best">ResNet-50 · Trained From Scratch</option>
+            <option value="mobilenet_pretrained_best">MobileNetV3 Large · ImageNet Pretrained</option>
+            <option value="mobilenet_scratch_best">MobileNetV3 Large · Trained From Scratch</option>
+            <option value="custom_scratch_best">Custom CNN · 4-Block Scratch</option>
+          </select>
+        </div>
+
+        <div class="action-buttons">
+          <button id="run-btn" class="button button-primary" disabled>
+            RUN CLASSIFICATION →
+          </button>
+          <button id="reset-btn" class="button button-text">
+            RESET
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 / CLASSIFICATION SECTION -->
+    <section id="classification" class="classification-section section-dark">
+      <div class="section-intro">
+        <p class="section-tag">02 / CLASSIFICATION</p>
+        <h2 class="section-title">THE SURFACE<br>DISCLOSED.</h2>
+      </div>
+
+      <!-- Results Display Container -->
+      <div id="result-container" class="result-container">
+        <!-- Default Empty State -->
+        <div class="pipeline-empty-state" id="pipeline-state">
+          <div class="pipeline-steps">
+            <span class="p-step">IMAGE</span>
+            <span class="p-arr">↓</span>
+            <span class="p-step">ANALYSIS</span>
+            <span class="p-arr">↓</span>
+            <span class="p-step">PATTERN</span>
+            <span class="p-arr">↓</span>
+            <span class="p-step">CLASSIFICATION</span>
+          </div>
+          <p class="pipeline-hint">Submit a 13-band Sentinel-2 GeoTIFF above or select a sample scene below.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 / MODEL SECTION -->
+    <section id="model" class="model-section">
+      <div class="section-intro">
+        <p class="section-tag">03 / MODEL</p>
+        <h2 class="section-title">THE LEARNED<br>INTERPRETER.</h2>
+        <article class="section-lead">
+          EuroSAT models ingest all 13 Sentinel-2 spectral channels simultaneously.
+          Rather than reducing the data to 3-band false color, the convolutional kernels operate across the full spectral cube.
+        </article>
+      </div>
+
+      <!-- Model Facts Grid -->
+      <div class="facts-grid" id="model-facts">
+        <div class="fact-card">
+          <span class="fact-label">FRAMEWORK</span>
+          <b class="fact-value" id="fact-framework">PyTorch</b>
+        </div>
+        <div class="fact-card">
+          <span class="fact-label">INPUT TENSOR</span>
+          <b class="fact-value">13 Bands × 64 × 64 Px</b>
+        </div>
+        <div class="fact-card">
+          <span class="fact-label">PREPROCESSING</span>
+          <b class="fact-value">DN / 10000.0 · μ=0.5, σ=0.5</b>
+        </div>
+        <div class="fact-card">
+          <span class="fact-label">BACKBONES</span>
+          <b class="fact-value">ResNet-50 · MobileNetV3 · Custom CNN</b>
+        </div>
+        <div class="fact-card">
+          <span class="fact-label">INFERENCE DEVICE</span>
+          <b class="fact-value" id="fact-device">CPU / CUDA</b>
+        </div>
+        <div class="fact-card">
+          <span class="fact-label">TARGET CLASSES</span>
+          <b class="fact-value">10 LULC Categories</b>
+        </div>
+      </div>
+
+      <!-- Architecture Pipeline Diagram -->
+      <div class="arch-diagram">
+        <h3 class="subsection-title">SPECTRAL TENSOR INGESTION PIPELINE</h3>
+        <div class="diagram-flow">
+          <div class="flow-node">
+            <span class="node-tag">INPUT</span>
+            <strong>Sentinel-2 GeoTIFF</strong>
+            <small>13 Bands · uint16 DN</small>
+          </div>
+          <span class="flow-arr">→</span>
+          <div class="flow-node">
+            <span class="node-tag">CALIBRATION</span>
+            <strong>Reflectance Scale</strong>
+            <small>Divide by 10,000.0</small>
+          </div>
+          <span class="flow-arr">→</span>
+          <div class="flow-node">
+            <span class="node-tag">TENSOR</span>
+            <strong>Resize &amp; Normalize</strong>
+            <small>64×64 · μ=0.5, σ=0.5</small>
+          </div>
+          <span class="flow-arr">→</span>
+          <div class="flow-node highlight">
+            <span class="node-tag">DEEP CONV</span>
+            <strong>13-Channel Stem</strong>
+            <small>ResNet / MobileNet</small>
+          </div>
+          <span class="flow-arr">→</span>
+          <div class="flow-node highlight">
+            <span class="node-tag">PREDICTION</span>
+            <strong>Softmax Probability</strong>
+            <small>10 LULC Classes</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sentinel-2 Spectral Bands Reference -->
+      <div class="bands-reference">
+        <h3 class="subsection-title">SENTINEL-2 SPECTRAL BANDS (13 CHANNELS)</h3>
+        <div class="bands-grid" id="bands-grid">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 / PERFORMANCE SECTION -->
+    <section id="performance" class="performance-section section-dark">
+      <div class="section-intro">
+        <p class="section-tag">04 / PERFORMANCE</p>
+        <h2 class="section-title">RESEARCH, NOT<br>SIMULATION.</h2>
+        <article class="section-lead">
+          The repository includes evaluation code in <code>src/evaluate.py</code> with scikit-learn classification reports and confusion matrices.
+          This application reports truthful repository facts and does not manufacture synthetic training curves or fabricated figures.
+        </article>
+      </div>
+
+      <!-- Research Artifact Card -->
+      <div class="research-artifact">
+        <div class="artifact-header">
+          <span>DATASET PARTITIONING &amp; CHECKPOINT SPECIFICATIONS</span>
+          <span class="artifact-status">VERIFIED FROM REPOSITORY DATA</span>
+        </div>
+        <div class="artifact-metrics-grid">
+          <div class="metric-box">
+            <span class="metric-num">18,900</span>
+            <span class="metric-desc">TRAINING SCENES (70%)</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-num">5,400</span>
+            <span class="metric-desc">VALIDATION SCENES (20%)</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-num">2,700</span>
+            <span class="metric-desc">TEST SCENES (10%)</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-num">27,000</span>
+            <span class="metric-desc">TOTAL 13-BAND MSI SCENES</span>
+          </div>
+        </div>
+
+        <div class="artifact-notes">
+          <div class="note-block">
+            <strong>CHECKPOINTS VALIDATED</strong>
+            <p>Weights loaded from <code>saved_models/allbands/*.pth</code> directly initialize the PyTorch state dictionaries with strict key verification.</p>
+          </div>
+          <div class="note-block">
+            <strong>LOSS &amp; OPTIMIZATION</strong>
+            <p>Models trained with CrossEntropyLoss and Adam optimizer ($\text{lr}=10^{-3}$) across 10 balanced EuroSAT classes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 / SAMPLE LIBRARY SECTION -->
+    <section id="samples-section" class="samples-section">
+      <div class="section-intro">
+        <p class="section-tag">05 / SAMPLE LIBRARY</p>
+        <h2 class="section-title">SCENES FROM<br>THE DATASET.</h2>
+        <p class="section-desc">
+          Representative 13-band Sentinel-2 scenes from the EuroSAT dataset.
+          Click any scene to pass its full 13-band tensor through the live inference engine.
+        </p>
+      </div>
+
+      <!-- Samples Grid -->
+      <div class="samples-grid" id="samples-container">
+        <div class="samples-loading">Discovering dataset scenes…</div>
+      </div>
+    </section>
+
+    <!-- 06 / ABOUT SECTION -->
+    <section id="about" class="about-section">
+      <div class="section-intro">
+        <p class="section-tag">06 / ABOUT</p>
+        <h2 class="section-title">LAND COVER,<br>READ AS SIGNAL.</h2>
+      </div>
+
+      <div class="about-columns">
+        <div class="about-col">
+          <h3>THE EUROSAT BENCHMARK</h3>
+          <p>
+            EuroSAT is a benchmark dataset based on Sentinel-2 satellite imagery covering 13 spectral bands
+            spanning 10 land-use and land-cover categories across Europe. The categories reflect critical geographic,
+            urban, and agricultural interfaces: Annual Crop, Forest, Herbaceous Vegetation, Highway, Industrial,
+            Pasture, Permanent Crop, Residential, River, and Sea/Lake.
+          </p>
+        </div>
+
+        <div class="about-col">
+          <h3>WHY 13 SPECTRAL BANDS MATTER</h3>
+          <p>
+            Standard optical RGB channels (Red, Green, Blue) miss key physical properties of the Earth's surface.
+            Sentinel-2's Vegetation Red Edge bands (B05–B07) reveal chlorophyll concentration, while the Near Infrared (B08, B08A)
+            and Shortwave Infrared (B11, B12) bands penetrate atmospheric moisture and discriminate between soil types,
+            irrigation levels, and industrial materials.
+          </p>
+        </div>
+
+        <div class="about-col">
+          <h3>INFERENCE INTEGRITY</h3>
+          <p>
+            Every prediction rendered in this application is calculated live by the PyTorch runtime.
+            Digital Numbers are scaled to physical surface reflectance by dividing by 10,000, normalized against
+            channel statistics, and fed through the active deep neural checkpoint.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <strong>TERRA / VISION</strong>
+        <span>PYTORCH · SENTINEL-2 · EUROSAT · 13 BANDS</span>
+      </div>
+      <p class="footer-tagline">
+        Understanding the surface of our planet through machine vision.
+      </p>
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -22,6 +22,8 @@ def load_image(image_path, in_channels):
         with rasterio.open(image_path) as src:
             image = src.read()
             image = np.transpose(image, (1, 2, 0))
+            # Cast to float32 and scale, matching training exactly
+            image = image.astype(np.float32) / 10000.0
     return image
 
 def predict(image_path, model_path, model_type, in_channels, num_classes, class_names):

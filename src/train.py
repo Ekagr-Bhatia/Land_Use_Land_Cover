@@ -46,7 +46,7 @@ def train(model, train_loader, val_loader, criterion, optimizer, epochs, device,
         train_acc = train_correct / total_train
         print(f"Train Loss: {train_loss/len(train_loader):.4f} | Train Acc: {train_acc*100:.2f}%")
         
-        # Validation
+        # Validation (if provided)
         if val_loader is not None:
             model.eval()
             val_loss = 0.0
@@ -68,6 +68,7 @@ def train(model, train_loader, val_loader, criterion, optimizer, epochs, device,
             val_acc = val_correct / total_val
             print(f"Val Loss: {val_loss/len(val_loader):.4f} | Val Acc: {val_acc*100:.2f}%")
             
+            # Save best validation model
             if val_acc > best_acc:
                 best_acc = val_acc
                 
@@ -78,7 +79,18 @@ def train(model, train_loader, val_loader, criterion, optimizer, epochs, device,
                     
                 save_path = os.path.join(save_dir, f"{model_name}_{weight_type}_best.pth")
                 torch.save(model.state_dict(), save_path)
-                print(f"Best model saved to {save_path}!")
+                print(f"Best val model saved to {save_path}!")
+        else:
+            # If no val set, save based on best training accuracy
+            if train_acc > best_acc:
+                best_acc = train_acc
+                weight_type = "pretrained" if is_pretrained else "scratch"
+                if model_name == "custom":
+                    weight_type = "scratch"
+                
+                save_path = os.path.join(save_dir, f"{model_name}_{weight_type}_best.pth")
+                torch.save(model.state_dict(), save_path)
+                print(f"Best train model saved to {save_path}!")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train LULC Models")
@@ -101,7 +113,10 @@ if __name__ == "__main__":
     
     # Load Data
     train_dataset = LULCDataset(root=args.data_dir, transform_status=True, in_channels=args.in_channels)
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True)
+    
+    # Use multiple workers and pin_memory to feed the GPU faster and prevent utilization drops
+    workers = 4 if os.name == 'nt' else 8
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True, num_workers=workers, pin_memory=True)
     
     num_classes = len(train_dataset.classes_names)
     print(f"Detected {num_classes} classes.")
